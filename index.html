@@ -37,13 +37,27 @@
     }
     button:disabled { background: #8ab4f8; cursor: not-allowed; }
     button.offline { background: #cf222e; }
+    .action-link {
+      display: block; width: 100%; padding: 10px; border: none; border-radius: 6px;
+      background: #0969da; color: #fff; font-size: 1rem; font-weight: 600;
+      text-align: center; text-decoration: none; margin-top: 4px;
+    }
+    .action-link[aria-disabled="true"] { background: #8ab4f8; pointer-events: none; }
+    .hint { color: #57606a; font-size: .78rem; text-align: center; margin-top: 8px; }
+    .divider { color: #57606a; font-size: .8rem; text-align: center; margin: 22px 0 12px; }
     .status { text-align: center; color: #57606a; font-size: .82rem; margin-top: 12px; min-height: 18px; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>🧭 Compass</h1>
-    <p class="sub">OAV Ganjam — Teacher / Admin sign in</p>
+    <p class="sub">OAV Ganjam — choose sign in</p>
+
+    <section aria-label="Student sign in">
+      <a id="studentLink" class="action-link" href="#" aria-disabled="true" tabindex="-1">Connecting…</a>
+      <p class="hint">Students: use your roll number and PIN.</p>
+    </section>
+    <p class="divider">Teacher / Admin</p>
 
     <form id="loginForm" method="POST" autocomplete="on">
       <div class="field">
@@ -64,6 +78,7 @@
   <script>
   (function () {
     var form = document.getElementById('loginForm');
+    var studentLink = document.getElementById('studentLink');
     var btn  = document.getElementById('submitBtn');
     var stat = document.getElementById('statusLine');
 
@@ -82,6 +97,10 @@
       // Native top-level form POST — not fetch — so it isn't subject to
       // CORS and the browser's password manager offers to save the
       // credentials against this stable page.
+      studentLink.href = url + '/login';
+      studentLink.textContent = 'Student login →';
+      studentLink.removeAttribute('aria-disabled');
+      studentLink.removeAttribute('tabindex');
       form.action = url + '/teacher/login';
       btn.disabled = false;
       btn.textContent = 'Sign in →';
@@ -92,6 +111,7 @@
       btn.classList.add('offline');
       btn.type = 'button';
       btn.onclick = function () { location.reload(); };
+      studentLink.textContent = 'Student login unavailable';
       stat.textContent = 'Server offline — try again shortly.';
     });
   })();
